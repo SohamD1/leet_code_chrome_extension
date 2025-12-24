@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeetCode to GitHub Sync</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>LeetCode → GitHub</h1>
+      <p class="subtitle">Sync your submissions</p>
+    </header>
+
+    <main>
+      <div class="status-section">
+        <div class="status-item">
+          <span class="label">Status:</span>
+          <span id="connection-status" class="status-value">Not configured</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Auto-sync:</span>
+          <span id="autosync-status" class="status-value">Disabled</span>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <button id="sync-current-btn" class="btn btn-primary">
+          Sync Current Submission
+        </button>
+      </div>
+
+      <div id="message-area" class="message-area hidden">
+        <p id="message-text"></p>
+      </div>
+    </main>
+
+    <footer>
+      <button id="open-options-btn" class="btn-link">Settings</button>
+    </footer>
+  </div>
+</body>
+</html>

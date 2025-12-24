@@ -5,5 +5,8 @@
   "description": "Automatically sync your LeetCode submissions to a GitHub repository",
   "permissions": [
     "storage"
-  ]
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
