@@ -1,0 +1,173 @@
+/**
+ * Styles for LeetCode to GitHub Sync Extension
+ */
+
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --bg-color: #ffffff;
+  --surface-color: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--bg-color);
+  line-height: 1.5;
+}
+
+.container {
+  width: 350px;
+  padding: 16px;
+}
+
+/* Header */
+header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Status Section */
+.status-section {
+  background-color: var(--surface-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.status-item .label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.status-value {
+  font-weight: 600;
+}
+
+.status-connected {
+  color: var(--success-color);
+}
+
+.status-disconnected {
+  color: var(--error-color);
+}
+
+/* Actions Section */
+.actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 8px;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: var(--primary-hover);
+}
+
+/* Message Area */
+.message-area {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.message-area.hidden {
+  display: none;
+}
+
+.message-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid var(--success-color);
+}
+
+.message-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid var(--error-color);
+}
+
+.message-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid var(--primary-color);
+}
+
+/* Footer */
+footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
