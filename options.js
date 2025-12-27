@@ -47,6 +47,18 @@ function setupEventListeners() {
     e.preventDefault();
     await saveSettings();
   });
+
+  // Test connection button
+  document.getElementById('test-btn').addEventListener('click', async () => {
+    await handleTestConnection();
+  });
+
+  // Reset button
+  document.getElementById('reset-btn').addEventListener('click', async () => {
+    if (confirm('Are you sure you want to reset all settings to defaults?')) {
+      await handleResetSettings();
+    }
+  });
 }
 
 /**
@@ -78,6 +90,63 @@ async function saveSettings() {
   } catch (error) {
     console.error('Error saving settings:', error);
     showMessage('Error saving settings: ' + error.message, 'error');
+  }
+}
+
+/**
+ * Test GitHub connection
+ */
+async function handleTestConnection() {
+  const testBtn = document.getElementById('test-btn');
+  testBtn.disabled = true;
+  testBtn.textContent = 'Testing...';
+
+  try {
+    // First save current settings
+    await saveSettings();
+
+    // Send message to background script to test connection
+    const response = await chrome.runtime.sendMessage({
+      type: 'TEST_GITHUB_CONNECTION'
+    });
+
+    if (response && response.success) {
+      showMessage('GitHub connection test successful!', 'success');
+    } else {
+      showMessage('Connection test failed: ' + (response?.error || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    console.error('Error testing connection:', error);
+    showMessage('Error: ' + error.message, 'error');
+  } finally {
+    testBtn.disabled = false;
+    testBtn.textContent = 'Test Connection';
+  }
+}
+
+/**
+ * Reset settings to defaults
+ */
+async function handleResetSettings() {
+  try {
+    // Clear all settings
+    await chrome.storage.sync.clear();
+
+    // Set default values
+    await chrome.storage.sync.set({
+      githubBranch: 'main',
+      autoSync: false,
+      fileStructure: 'by-difficulty',
+      fileNaming: 'problem-name'
+    });
+
+    // Reload form with defaults
+    await loadSettings();
+
+    showMessage('Settings reset to defaults', 'success');
+  } catch (error) {
+    console.error('Error resetting settings:', error);
+    showMessage('Error resetting settings: ' + error.message, 'error');
   }
 }
 
