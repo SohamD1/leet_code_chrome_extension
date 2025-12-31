@@ -71,6 +71,109 @@ async function handleSyncSubmission(submissionData) {
 }
 
 /**
+ * Make a request to GitHub API
+ * @param {string} endpoint - API endpoint (e.g., '/repos/owner/repo/contents/path')
+ * @param {Object} options - Fetch options
+ * @returns {Promise<Object>}
+ */
+async function githubAPIRequest(endpoint, options = {}) {
+  const settings = await chrome.storage.sync.get(['githubToken']);
+
+  if (!settings.githubToken) {
+    throw new Error('GitHub token not configured');
+  }
+
+  const url = `https://api.github.com${endpoint}`;
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${settings.githubToken}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+
+  if (!response.ok) {
+    let errorMessage = `GitHub API error: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      // Ignore JSON parse errors
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get file content from GitHub repository
+ * @param {string} owner - Repository owner
+ * @param {string} repo - Repository name
+ * @param {string} path - File path
+ * @param {string} branch - Branch name
+ * @returns {Promise<Object|null>} File data or null if not found
+ */
+async function getFileContent(owner, repo, path, branch = 'main') {
+  try {
+    console.log(`Getting file: ${owner}/${repo}/${path} on ${branch}`);
+
+    const endpoint = `/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    const data = await githubAPIRequest(endpoint);
+
+    return data;
+  } catch (error) {
+    // If file doesn't exist, return null
+    if (error.message.includes('404')) {
+      console.log('File not found:', path);
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Create or update a file in GitHub repository
+ * @param {string} owner - Repository owner
+ * @param {string} repo - Repository name
+ * @param {string} path - File path
+ * @param {string} content - File content (will be base64 encoded)
+ * @param {string} message - Commit message
+ * @param {string} branch - Branch name
+ * @param {string|null} sha - File SHA (required for updates)
+ * @returns {Promise<Object>}
+ */
+async function createOrUpdateFile(owner, repo, path, content, message, branch = 'main', sha = null) {
+  console.log(`Creating/updating file: ${owner}/${repo}/${path}`);
+
+  const endpoint = `/repos/${owner}/${repo}/contents/${path}`;
+
+  // Base64 encode the content
+  const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+  const body = {
+    message,
+    content: encodedContent,
+    branch
+  };
+
+  // If SHA is provided, this is an update
+  if (sha) {
+    body.sha = sha;
+  }
+
+  const data = await githubAPIRequest(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(body)
+  });
+
+  return data;
+}
+
+/**
  * Test GitHub API connection
  * @returns {Promise<Object>}
  */
@@ -81,7 +184,8 @@ async function handleTestGitHubConnection() {
     // Get settings from storage
     const settings = await chrome.storage.sync.get([
       'githubToken',
-      'githubOwner'
+      'githubOwner',
+      'githubRepo'
     ]);
 
     // Validate settings
@@ -89,12 +193,18 @@ async function handleTestGitHubConnection() {
       throw new Error('GitHub token not configured');
     }
 
-    // TODO: Implement actual GitHub API test
-    // This will be implemented in later commits
+    if (!settings.githubOwner || !settings.githubRepo) {
+      throw new Error('GitHub owner and repository must be configured');
+    }
+
+    // Test API connection by getting repository info
+    const endpoint = `/repos/${settings.githubOwner}/${settings.githubRepo}`;
+    const repoData = await githubAPIRequest(endpoint);
 
     return {
-      message: 'GitHub connection test handler called',
-      configured: !!settings.githubToken
+      message: 'Successfully connected to GitHub',
+      repository: repoData.full_name,
+      private: repoData.private
     };
   } catch (error) {
     console.error('Error in handleTestGitHubConnection:', error);
